@@ -20,12 +20,9 @@ def user_connect() :
    data_currsor=database_connection.cursor()
    data_currsor.execute("SELECT user_name,user_password from LOGINS")
    records=data_currsor.fetchall()
-   if str(Login_page_User_name_Entry.get()) and str(Login_page_User_pass_Entry) in records :
-     print("YES")
-   else :
-    print('NO')
+   print(records)
+   #if  (str(Login_page_User_name_Entry.get()), str(Login_page_User_pass_Entry.get())) in records :
    database_connection.commit()
-
 '''    
 def temp_text_pass2(e) :
     Login_page_User_pass2_Entry.delete(0,"end") 
