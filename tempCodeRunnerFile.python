@@ -1,6 +1,0 @@
-records=[("amine","diden")]
-
-if ("amine") in records :
-    print("Yes")
-else :
-    print("No")
