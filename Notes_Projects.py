@@ -20,7 +20,10 @@ def user_connect() :
    data_currsor=database_connection.cursor()
    data_currsor.execute("SELECT user_name,user_password from LOGINS")
    records=data_currsor.fetchall()
-   #if  (str(Login_page_User_name_Entry.get()), str(Login_page_User_pass_Entry.get())) in records :
+   if  (str(Login_page_User_name_Entry.get()), str(Login_page_User_pass_Entry.get())) not in records  :
+     print("NOT THERE")
+    #print(records.index((str(Login_page_User_name_Entry.get()),str(Login_page_User_pass_Entry.get()))))
+    
    database_connection.commit()
 #######################################Register Page ################################################
 def register_page() :
