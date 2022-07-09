@@ -16,7 +16,7 @@ def temp_text_pass(e) :
     Login_page_User_pass_Entry.delete(0,"end") 
     Login_page_User_pass_Entry.config(show="*",text_color='black')
 def user_connect() :
-   database_connection=sqlite3.connect("Notes_database.db")
+   database_connection=sqlite3.connect("NOTES_DB.db")
    data_currsor=database_connection.cursor()
    data_currsor.execute("SELECT user_name,user_password from LOGINS")
    records=data_currsor.fetchall()
@@ -25,7 +25,7 @@ def user_connect() :
 #######################################Register Page ################################################
 def register_page() :
     def Done_Register() :
-      data_base=sqlite3.connect("Notes_database.db")
+      data_base=sqlite3.connect("NOTES_DB.db")
       data_cursor=data_base.cursor()
       data_cursor.execute("INSERT INTO LOGINS(user_ID,user_name,user_password,user_email) VALUES(?,?,?,?)",(1,Register_page_name_entry.get(),Register_page_pass_entry.get(),Register_page_email_entry.get()))
       Register_page_name_entry.delete(0,END)
