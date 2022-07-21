@@ -1,9 +1,11 @@
 import tkinter as tk
 import sqlite3
 from tkinter import *
-from tkinter import ttk
 from tkinter import messagebox
 from customtkinter import *
+
+
+
 
 
 class main_app(tk.Tk):
@@ -14,14 +16,25 @@ class main_app(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
         self.frames = {}
+        data_baseconnect=sqlite3.connect('NOTES_DB.db')
+        data_cursor=data_baseconnect.cursor()
+        data_cursor.execute('SELECT current_state from LOGINS_STATE')
+        Current_person_state = data_cursor.fetchall()
         for frame_class in (Login_page,Register_page, Welcoming_page):
             frame = frame_class(container, self)
             self.frames[frame_class] = frame
             frame.grid(row=0, column=0, sticky="nsew")
-        self.show_frame(Login_page)
+        if Current_person_state[0][0]==0: 
+         self.show_frame(Login_page)
+        else :
+          self.show_frame(Welcoming_page)
+          
+        
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
+
+
 
         
 class Login_page(tk.Frame):
@@ -55,8 +68,9 @@ class Login_page(tk.Frame):
                     data_currsor=database_connection.cursor()
                     Login_page_Error_connect.config(text='')
                     data_currsor.execute("UPDATE LOGINS_STATE SET current_user=(?),current_state=(?)",((str(Login_page_User_name_Entry.get())),('1')))
-                    controller.show_frame(Welcoming_page)
                     database_connection.commit()
+                    controller.show_frame(Welcoming_page)
+                    
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         
         Login_page_frame=CTkFrame(self,width=350,height=450,corner_radius=15,fg_color='#A6A6A6')
@@ -153,11 +167,12 @@ class Welcoming_page(tk.Frame):
         database_connect=sqlite3.connect('NOTES_DB.db')
         data_cursor=database_connect.cursor()
         data_cursor.execute("SELECT current_user,current_state from LOGINS_STATE")
-        recordss=data_cursor.fetchall()
-        Current_user= ''
-        if recordss[0][1] == 1 :
-         Current_user=str(recordss[0][0])
-        Welcome_page_welcome_label=Label(self,text="Welcome\n"+Current_user,font=('arial',25),bg='#EDD01C')
+        Current_user= data_cursor.fetchall()
+        
+        if Current_user[0][1] == 0 :
+            Current_user = [['','']]  
+        
+        Welcome_page_welcome_label=Label(self,text="Welcome\n"+Current_user[0][0],font=('arial',25),bg='#EDD01C')   
         Welcome_page_welcome_label.place(x=180,y=50) 
         Welcome_page_welcome_enter_button = Button(self,text="Enter")
         Welcome_page_welcome_enter_button.place(x=50,y=500)
