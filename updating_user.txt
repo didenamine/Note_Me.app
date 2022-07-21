@@ -1,0 +1,7 @@
+current_state_currsor=database_connect.cursor()
+          current_state_currsor.execute("SELECT current_state from LOGINS_STATE")
+          current_state=current_state_currsor.fetchall()
+          if current_state== "0" or current_state == 0 :              
+           data_cursor.execute('UPDATE LOGINS_STATE SET current_user=(?)',(str(Register_page_name_entry.get())))
+          else :
+           data_cursor.execute('UPDATE LOGINS_STATE SET current_user=(?),current_state=(?)',(str(Register_page_name_entry.get()),'1'))
