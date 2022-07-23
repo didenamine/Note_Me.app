@@ -3,11 +3,13 @@ import sqlite3
 from tkinter import *
 from tkinter import messagebox
 from customtkinter import *
-
-
-
-
-
+wrong_pass_counter = 0
+databae_connect =sqlite3.connect('NOTES_DB.db')
+data_cursor=databae_connect.cursor()
+data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
+Current_stateV1= data_cursor.fetchall()
+Current_stateV2=Current_stateV1[0][0]
+Current_userV2 = Current_stateV1[0][1]
 class main_app(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -38,7 +40,7 @@ class main_app(tk.Tk):
 
         
 class Login_page(tk.Frame):
-    
+   
     def __init__(self, parent, controller):
         def temp_text_name(e) :
          Login_page_User_name_Entry.delete(0,END) 
@@ -46,33 +48,31 @@ class Login_page(tk.Frame):
         def temp_text_pass(e) :
          Login_page_User_pass_Entry.delete(0,END) 
          Login_page_User_pass_Entry.config(show="*",text_color='black')
-        def restore_main_look() :
-            Login_page_User_name_Entry.delete(0,END) 
-            Login_page_User_name_Entry.config(Login_page_frame,width=300,height=30,text_font=('arial',20),fg_color='#E6E6E6',text_color="#8C8C8C") 
-            Login_page_User_name_Entry.insert(0,'HELLO')
-            Login_page_User_name_Entry.bind("<FocusIn>",temp_text_name())
-            Login_page_User_pass_Entry.delete(0,END)
-            Login_page_User_pass_Entry.config(Login_page_frame,show="text",width=300,height=30,text_font=('arial',20),fg_color='#E6E6E6',text_color="#8C8C8C")
-            Login_page_User_pass_Entry.insert(0,"User password")
-            #Login_page_User_pass_Entry.bind("<FocusIn>",temp_text_pass())
+        
         def user_connect() :
+                global Current_stateV2
+                global Current_userV2
                 database_connection=sqlite3.connect("NOTES_DB.db")
                 data_currsor=database_connection.cursor()
                 data_currsor.execute("SELECT user_name,user_password from LOGINS")
                 records=data_currsor.fetchall()
+                global wrong_pass_counter 
                 if  (str(Login_page_User_name_Entry.get()), str(Login_page_User_pass_Entry.get())) not in records  :
                     Login_page_Error_connect.config(text='Wrong Username or Pass !')
-                    restore_main_look()
+                    wrong_pass_counter+=1 
+                    if wrong_pass_counter>3 : 
+                        Login_page_Forget_pass =Button(text="Forget password?",)
+
                 else :
                     database_connection=sqlite3.connect('NOTES_DB.db')
                     data_currsor=database_connection.cursor()
                     Login_page_Error_connect.config(text='')
+                    Current_userV2=str(Login_page_User_name_Entry.get())
                     data_currsor.execute("UPDATE LOGINS_STATE SET current_user=(?),current_state=(?)",((str(Login_page_User_name_Entry.get())),('1')))
                     database_connection.commit()
-                    controller.show_frame(Welcoming_page)
-                    
+                    controller.show_frame(Welcoming_page)            
         tk.Frame.__init__(self,parent,bg='#EDD01C')
-        
+       
         Login_page_frame=CTkFrame(self,width=350,height=450,corner_radius=15,fg_color='#A6A6A6')
         Login_page_frame.place(x=75,y=50)
         Login_page_label=Label(Login_page_frame,width=10,text="Login",font=("Times New Roman",30),bg='#A6A6A6')
@@ -164,20 +164,20 @@ class Welcoming_page(tk.Frame):
             controller.show_frame(Login_page)
             database_connect.commit()
         tk.Frame.__init__(self,parent,bg='#EDD01C')
-        database_connect=sqlite3.connect('NOTES_DB.db')
-        data_cursor=database_connect.cursor()
-        data_cursor.execute("SELECT current_user,current_state from LOGINS_STATE")
-        Current_user= data_cursor.fetchall()
         
-        if Current_user[0][1] == 0 :
-            Current_user = [['','']]  
-        
-        Welcome_page_welcome_label=Label(self,text="Welcome\n"+Current_user[0][0],font=('arial',25),bg='#EDD01C')   
+        Welcome_page_welcome_label=Label(self,text="Welcome\n",font=('arial',25),bg='#EDD01C')   
         Welcome_page_welcome_label.place(x=180,y=50) 
+        global Current_stateV2
+        global Current_userV2
+        if Current_userV2 == None :
+            Current_userV2 = ''
+        else : 
+            pass 
+        Welcome_page_welcome_label.config(text="Welcome\n"+Current_userV2)
         Welcome_page_welcome_enter_button = Button(self,text="Enter")
         Welcome_page_welcome_enter_button.place(x=50,y=500)
         disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button)
-        disconnect_button.place(x=250,y=50)
+        disconnect_button.place(x=250,y=500)
                     
 
 

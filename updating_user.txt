@@ -1,1 +1,2 @@
-still have a problem when LOGININ with someone the welcome page doesnt load the name 
+Complete the interface and the login things 
+still the interface for the notes .. 
