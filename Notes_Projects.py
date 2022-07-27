@@ -1,8 +1,10 @@
 import tkinter as tk
 import sqlite3
-from tkinter import *
+from tkinter import Label,Button,Entry,Frame
 from tkinter import messagebox
 from customtkinter import *
+
+
 wrong_pass_counter = 0
 databae_connect =sqlite3.connect('NOTES_DB.db')
 data_cursor=databae_connect.cursor()
@@ -10,6 +12,8 @@ data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
 Current_stateV1= data_cursor.fetchall()
 Current_stateV2=Current_stateV1[0][0]
 Current_userV2 = Current_stateV1[0][1]
+
+#main _ app 
 class main_app(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -22,7 +26,7 @@ class main_app(tk.Tk):
         data_cursor=data_baseconnect.cursor()
         data_cursor.execute('SELECT current_state from LOGINS_STATE')
         Current_person_state = data_cursor.fetchall()
-        for frame_class in (Login_page,Register_page, Welcoming_page):
+        for frame_class in (Login_page,Register_page, Welcoming_page,notes_page1,notes_page2):
             frame = frame_class(container, self)
             self.frames[frame_class] = frame
             frame.grid(row=0, column=0, sticky="nsew")
@@ -30,15 +34,11 @@ class main_app(tk.Tk):
          self.show_frame(Login_page)
         else :
           self.show_frame(Welcoming_page)
-          
-        
+               
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
-
-
-
-        
+#Login page
 class Login_page(tk.Frame):
    
     def __init__(self, parent, controller):
@@ -48,6 +48,8 @@ class Login_page(tk.Frame):
         def temp_text_pass(e) :
          Login_page_User_pass_Entry.delete(0,END) 
          Login_page_User_pass_Entry.config(show="*",text_color='black')
+        def wrong_pass() :
+           pass 
         
         def user_connect() :
                 global Current_stateV2
@@ -61,7 +63,8 @@ class Login_page(tk.Frame):
                     Login_page_Error_connect.config(text='Wrong Username or Pass !')
                     wrong_pass_counter+=1 
                     if wrong_pass_counter>3 : 
-                        Login_page_Forget_pass =Button(text="Forget password?",)
+                        Login_page_Forget_pass =Button(text="Forget password?",width=20,height=1,bg='#A6A6A6',bd=0,activebackground='#A6A6A6',fg='blue')
+                        Login_page_Forget_pass.place(x=270,y=469)
 
                 else :
                     database_connection=sqlite3.connect('NOTES_DB.db')
@@ -93,7 +96,7 @@ class Login_page(tk.Frame):
         Login_page_register_button.place(x=80,y=367) 
         Or_label=Label(Login_page_frame,text="Or",bg="#A6A6A6",font=('arial',10))
         Or_label.place(x=145,y=345)    
-    
+#Register page 
 class Register_page(tk.Frame):
     def __init__(self,parent,controller):
         
@@ -152,10 +155,8 @@ class Register_page(tk.Frame):
         Register_label3.make_button()
         Register_label4=Register_label("Register_label4",0,283,"Enter Email",15,1,'black')
         Register_label4.make_button()
-       
-
+#welcoming page
 class Welcoming_page(tk.Frame):
-    
     def __init__(self,parent,controller):
         def Leave_button() : 
             database_connect=sqlite3.connect('NOTES_DB.db')
@@ -164,23 +165,37 @@ class Welcoming_page(tk.Frame):
             controller.show_frame(Login_page)
             database_connect.commit()
         tk.Frame.__init__(self,parent,bg='#EDD01C')
-        
+        def Enter_in_notes() :
+            controller.show_frame(notes_page1)
         Welcome_page_welcome_label=Label(self,text="Welcome\n",font=('arial',25),bg='#EDD01C')   
         Welcome_page_welcome_label.place(x=180,y=50) 
         global Current_stateV2
         global Current_userV2
         if Current_userV2 == None :
             Current_userV2 = ''
-        else : 
-            pass 
         Welcome_page_welcome_label.config(text="Welcome\n"+Current_userV2)
-        Welcome_page_welcome_enter_button = Button(self,text="Enter")
-        Welcome_page_welcome_enter_button.place(x=50,y=500)
-        disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button)
-        disconnect_button.place(x=250,y=500)
+        Welcome_page_welcome_enter_button = Button(self,text="Enter",command=Enter_in_notes,width=15,height=2,font='arial',bg='light green',fg='black')
+        Welcome_page_welcome_enter_button.place(x=160,y=300)
+        disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button,font=('arial',15))
+        disconnect_button.place(x=350,y=500)
                     
+#Notes page 1
+class notes_page1(tk.Frame) :
+    def __init__(self,parent,controller) :
+        tk.Frame.__init__(self,parent,bg='#EDD01C')
+        def add_new_note() : 
+            controller.show_frame(notes_page2)
+        add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
+        add_new_note_button.place(x=400,y=500)
 
-
+#Notes page 2
+class notes_page2(tk.Frame) :
+    def __init__(self,parent,controller) :
+        tk.Frame.__init__(self,parent,bg='white')
+        title_entry=Entry(self,width=100,font=('arial',20),bg='white')
+        title_entry.insert(2,"TITLE :")
+        title_entry.place(x=0,y=10)
+        
 
 app = main_app()
 app.geometry('500x600')
