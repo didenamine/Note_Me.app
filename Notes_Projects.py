@@ -1,8 +1,8 @@
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,Frame
+from tkinter import Label,Button,Entry,END
 from tkinter import messagebox
-from customtkinter import *
+from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 
 wrong_pass_counter = 0
