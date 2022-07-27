@@ -11,7 +11,6 @@ data_cursor=databae_connect.cursor()
 data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
 Current_stateV1= data_cursor.fetchall()
 Current_userV2 = Current_stateV1[0][1]
-
 #main _ app 
 class main_app(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -63,7 +62,6 @@ class Login_page(tk.Frame):
                     if wrong_pass_counter>3 : 
                         Login_page_Forget_pass =Button(text="Forget password?",width=20,height=1,bg='#A6A6A6',bd=0,activebackground='#A6A6A6',fg='blue')
                         Login_page_Forget_pass.place(x=270,y=469)
-
                 else :
                     database_connection=sqlite3.connect('NOTES_DB.db')
                     data_currsor=database_connection.cursor()
@@ -73,7 +71,6 @@ class Login_page(tk.Frame):
                     database_connection.commit()
                     controller.show_frame(Welcoming_page)            
         tk.Frame.__init__(self,parent,bg='#EDD01C')
-       
         Login_page_frame=CTkFrame(self,width=350,height=450,corner_radius=15,fg_color='#A6A6A6')
         Login_page_frame.place(x=75,y=50)
         Login_page_label=Label(Login_page_frame,width=10,text="Login",font=("Times New Roman",30),bg='#A6A6A6')
@@ -116,7 +113,6 @@ class Register_page(tk.Frame):
          else :    
             register_page_warning_label=Register_label('warning',20,350,"Wrong password!",15,1,'red')
             register_page_warning_label.make_button()
-
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         Register_page_frame=CTkFrame(self,width=350,height=450,bg_color='#EDD01C',corner_radius=15,fg_color='#A6A6A6')
         Register_page_frame.place(x=75,y=50)
@@ -176,7 +172,6 @@ class Welcoming_page(tk.Frame):
         Welcome_page_welcome_enter_button.place(x=160,y=300)
         disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button,font=('arial',15))
         disconnect_button.place(x=350,y=500)
-                    
 #Notes page 1
 class notes_page1(tk.Frame) :
     def __init__(self,parent,controller) :
@@ -185,16 +180,20 @@ class notes_page1(tk.Frame) :
             controller.show_frame(notes_page2)
         add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
         add_new_note_button.place(x=400,y=500)
-
 #Notes page 2
 class notes_page2(tk.Frame) :
     def __init__(self,parent,controller) :
+        database_connect = sqlite3.connect('NOTES_DB.db')
+        database_cursor = database_connect.cursor()
+
         tk.Frame.__init__(self,parent,bg='white')
         title_entry=Entry(self,width=100,font=('arial',20),bg='white')
-        title_entry.insert(2,"TITLE :")
-        title_entry.place(x=0,y=10)
-        
+        title_entry.place(x=80,y=10)
+        title_label = Label(self,text="TITLE :",width=5,height=1,bg='white',font='arial')
+        title_label.place(x=10,y=15)
 
+        note_Entry = Entry(self)
+    
 app = main_app()
 app.geometry('500x600')
 app.resizable(False,False )
