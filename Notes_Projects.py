@@ -10,7 +10,6 @@ databae_connect =sqlite3.connect('NOTES_DB.db')
 data_cursor=databae_connect.cursor()
 data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
 Current_stateV1= data_cursor.fetchall()
-Current_stateV2=Current_stateV1[0][0]
 Current_userV2 = Current_stateV1[0][1]
 
 #main _ app 
@@ -52,7 +51,6 @@ class Login_page(tk.Frame):
            pass 
         
         def user_connect() :
-                global Current_stateV2
                 global Current_userV2
                 database_connection=sqlite3.connect("NOTES_DB.db")
                 data_currsor=database_connection.cursor()
@@ -169,7 +167,7 @@ class Welcoming_page(tk.Frame):
             controller.show_frame(notes_page1)
         Welcome_page_welcome_label=Label(self,text="Welcome\n",font=('arial',25),bg='#EDD01C')   
         Welcome_page_welcome_label.place(x=180,y=50) 
-        global Current_stateV2
+        
         global Current_userV2
         if Current_userV2 == None :
             Current_userV2 = ''
