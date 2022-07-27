@@ -1,6 +1,6 @@
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,END
+from tkinter import Label,Button,Entry,END,Text
 from tkinter import messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
@@ -185,15 +185,22 @@ class notes_page2(tk.Frame) :
     def __init__(self,parent,controller) :
         database_connect = sqlite3.connect('NOTES_DB.db')
         database_cursor = database_connect.cursor()
+        def  get_text() : 
+           print(note_Entry.get('1.0',END))
+           note_Entry.delete(1.0,END)
 
         tk.Frame.__init__(self,parent,bg='white')
         title_entry=Entry(self,width=100,font=('arial',20),bg='white')
         title_entry.place(x=80,y=10)
         title_label = Label(self,text="TITLE :",width=5,height=1,bg='white',font='arial')
         title_label.place(x=10,y=15)
+        note_label= Label(self,text="Your Note :",font='arial',bg='white',height=1)
+        note_label.place(x=0,y=48)
+        note_Entry = Text(self,height=30,width=60,background='yellow')
+        note_Entry.place(x=10,y=80)
+        btn=Button(self,text="get",command=get_text)
+        btn.place(x=10,y=10)
 
-        note_Entry = Entry(self)
-    
 app = main_app()
 app.geometry('500x600')
 app.resizable(False,False )
