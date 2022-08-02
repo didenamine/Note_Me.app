@@ -188,7 +188,7 @@ class notes_page2(tk.Frame) :
         def  get_text() : 
            print(note_Entry.get('1.0',END))
            note_Entry.delete(1.0,END)
-
+#
         tk.Frame.__init__(self,parent,bg='white')
         title_entry=Entry(self,width=100,font=('arial',20),bg='white')
         title_entry.place(x=80,y=10)
