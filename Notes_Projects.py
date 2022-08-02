@@ -172,7 +172,7 @@ class Welcoming_page(tk.Frame):
         Welcome_page_welcome_enter_button.place(x=160,y=300)
         disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button,font=('arial',15))
         disconnect_button.place(x=350,y=500)
-#Notes page 1
+#Notes page 1//where to show the previous notes 
 class notes_page1(tk.Frame) :
     def __init__(self,parent,controller) :
         tk.Frame.__init__(self,parent,bg='#EDD01C')
@@ -180,7 +180,7 @@ class notes_page1(tk.Frame) :
             controller.show_frame(notes_page2)
         add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
         add_new_note_button.place(x=400,y=500)
-#Notes page 2
+#Notes page 2 // page where to write the note 
 class notes_page2(tk.Frame) :
     def __init__(self,parent,controller) :
         database_connect = sqlite3.connect('NOTES_DB.db')
@@ -203,5 +203,5 @@ class notes_page2(tk.Frame) :
 
 app = main_app()
 app.geometry('500x600')
-app.resizable(False,False )
+app.resizable(False,False)
 app.mainloop()

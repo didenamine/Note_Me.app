@@ -1,6 +1,4 @@
-Complete the interface and the login things 
-still the interface for the notes .. 
-
+DESGIN ARE STILL SHITTY 
 
 
 --------
@@ -10,3 +8,5 @@ have to remove the current user and curret state from globals
 -----------
 def wrong_pass still need to be implemented  line 66
 
+------------------------
+work on the : actual texting place and how to show them 
