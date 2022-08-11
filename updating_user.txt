@@ -10,3 +10,8 @@ def wrong_pass still need to be implemented  line 66
 
 ------------------------
 work on the : actual texting place and how to show them 
+
+about the data base : 
+   -the login is alright 
+   -we have to remove the time till i get a good way to sort them 
+   -notes database should contain the title - the note - note rank which should be the main key 

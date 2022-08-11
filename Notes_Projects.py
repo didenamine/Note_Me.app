@@ -1,9 +1,8 @@
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,END,Text
+from tkinter import VERTICAL, Label,Button,Entry,END, Listbox, Scrollbar,Text,RIGHT,Y,BOTTOM,X,HORIZONTAL,Canvas,LEFT,BOTH,Frame, YView
 from tkinter import messagebox
-from customtkinter import CTkFrame,CTkEntry,CTkButton,END
-
+from customtkinter import CTkFrame,CTkEntry,CTkButton,END,CTkCanvas
 
 wrong_pass_counter = 0
 databae_connect =sqlite3.connect('NOTES_DB.db')
@@ -38,7 +37,6 @@ class main_app(tk.Tk):
         frame.tkraise()
 #Login page
 class Login_page(tk.Frame):
-   
     def __init__(self, parent, controller):
         def temp_text_name(e) :
          Login_page_User_name_Entry.delete(0,END) 
@@ -48,7 +46,6 @@ class Login_page(tk.Frame):
          Login_page_User_pass_Entry.config(show="*",text_color='black')
         def wrong_pass() :
            pass 
-        
         def user_connect() :
                 global Current_userV2
                 database_connection=sqlite3.connect("NOTES_DB.db")
@@ -176,6 +173,31 @@ class Welcoming_page(tk.Frame):
 class notes_page1(tk.Frame) :
     def __init__(self,parent,controller) :
         tk.Frame.__init__(self,parent,bg='#EDD01C')
+        page1_data=sqlite3.connect('NOTES_DB.db')
+        page1_cursor = page1_data.cursor()
+        old_notes=page1_cursor.execute('SELECT * from NOTES').fetchall()
+        Notes_Count=len(old_notes)
+        y_place=60
+        '''Old_note_label=Label(self,text='OLD NOTES:',fg='black',bg='#EDD01C',font=('arial',15))
+        Old_note_label.place(x=10,y=10)'''
+        canvas = Canvas(self)
+        scroll_y = Scrollbar(self, orient="vertical", command=canvas.yview)
+        frame = Frame(canvas)
+        for i in range(Notes_Count) :
+            if (i+1)%2==0 :
+             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial')
+             x.pack()
+            else :
+             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial')
+             x.place(x=100,y=10)
+             y_place+=100
+        
+        canvas.create_window(0, 0, anchor='nw', window=frame)
+        canvas.update_idletasks()
+        canvas.configure(scrollregion=canvas.bbox('all'),yscrollcommand=scroll_y.set)
+                 
+        canvas.pack(fill='both', expand=True, side='left')
+        scroll_y.pack(fill='y', side='right')
         def add_new_note() : 
             controller.show_frame(notes_page2)
         add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
@@ -186,9 +208,13 @@ class notes_page2(tk.Frame) :
         database_connect = sqlite3.connect('NOTES_DB.db')
         database_cursor = database_connect.cursor()
         def  get_text() : 
-           print(note_Entry.get('1.0',END))
+           data_cursor.execute('SELECT * FROM NOTES')
+           Note_Rank=len(data_cursor.fetchall())
+           data_cursor.execute('INSERT INTO NOTES (Note_Rank,Note_Title,Note_Text) VALUES (?,?,?)',(Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
+           title_entry.delete(0,END)
            note_Entry.delete(1.0,END)
-#
+           messagebox.showinfo('Done',"Note Saved")
+           databae_connect.commit()
         tk.Frame.__init__(self,parent,bg='white')
         title_entry=Entry(self,width=100,font=('arial',20),bg='white')
         title_entry.place(x=80,y=10)
@@ -198,9 +224,8 @@ class notes_page2(tk.Frame) :
         note_label.place(x=0,y=48)
         note_Entry = Text(self,height=30,width=60,background='yellow')
         note_Entry.place(x=10,y=80)
-        btn=Button(self,text="get",command=get_text)
-        btn.place(x=10,y=10)
-
+        Done_text=Button(self,text="Done",command=get_text)
+        Done_text.place(x=450,y=563)
 app = main_app()
 app.geometry('500x600')
 app.resizable(False,False)
