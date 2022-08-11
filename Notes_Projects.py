@@ -1,8 +1,8 @@
 import tkinter as tk
 import sqlite3
-from tkinter import VERTICAL, Label,Button,Entry,END, Listbox, Scrollbar,Text,RIGHT,Y,BOTTOM,X,HORIZONTAL,Canvas,LEFT,BOTH,Frame, YView
+from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
 from tkinter import messagebox
-from customtkinter import CTkFrame,CTkEntry,CTkButton,END,CTkCanvas
+from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 wrong_pass_counter = 0
 databae_connect =sqlite3.connect('NOTES_DB.db')
@@ -91,7 +91,6 @@ class Login_page(tk.Frame):
 #Register page 
 class Register_page(tk.Frame):
     def __init__(self,parent,controller):
-        
         def Done_register() :
           #putting the person inside the database 
          if  str(Register_page_pass_entry.get()) == str(Register_page_pass_confirm_entry.get()) :  
@@ -160,7 +159,6 @@ class Welcoming_page(tk.Frame):
             controller.show_frame(notes_page1)
         Welcome_page_welcome_label=Label(self,text="Welcome\n",font=('arial',25),bg='#EDD01C')   
         Welcome_page_welcome_label.place(x=180,y=50) 
-        
         global Current_userV2
         if Current_userV2 == None :
             Current_userV2 = ''
@@ -177,27 +175,45 @@ class notes_page1(tk.Frame) :
         page1_cursor = page1_data.cursor()
         old_notes=page1_cursor.execute('SELECT * from NOTES').fetchall()
         Notes_Count=len(old_notes)
-        y_place=60
-        '''Old_note_label=Label(self,text='OLD NOTES:',fg='black',bg='#EDD01C',font=('arial',15))
-        Old_note_label.place(x=10,y=10)'''
-        canvas = Canvas(self)
+        canvas = Canvas(self,bg='#EDD01C')
         scroll_y = Scrollbar(self, orient="vertical", command=canvas.yview)
-        frame = Frame(canvas)
+        frame = Frame(canvas,bg='#EDD01C')
+        Old_note_label=Label(frame,text='OLD NOTES:',fg='black',bg='#EDD01C',font=('arial',15),height=2)
+        Old_note_label.grid(row=0,column=1)
+        if Notes_Count==0 :
+         space_label=Label(frame,text='                 Empty',fg='Black',bg='#EDD01C',height=11,font=('arial',30))
+         space_label.grid(row=1,column=1)
+        else :
+         space_label=Label(frame,text='' ,bg='#EDD01C',height=2)
+         space_label.grid(row=1,column=1)
         for i in range(Notes_Count) :
-            if (i+1)%2==0 :
-             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial')
-             x.pack()
+            if i%2==0 :
+             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+             x.grid(row=(i+1)+1,column=1)
+             frame.update()
             else :
-             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial')
-             x.place(x=100,y=10)
-             y_place+=100
-        
+             if i>0 :
+              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+              f.grid(row=(i+1),column=2)
+             else :
+              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+              f.grid(row=(i+1)+1,column=2)
         canvas.create_window(0, 0, anchor='nw', window=frame)
         canvas.update_idletasks()
         canvas.configure(scrollregion=canvas.bbox('all'),yscrollcommand=scroll_y.set)
-                 
         canvas.pack(fill='both', expand=True, side='left')
         scroll_y.pack(fill='y', side='right')
+        #mouse control the scrollbar :
+        def _setup_mousewheel(frame,canvas):
+            frame.bind('<Enter>', lambda *args, passed=canvas: _bound_to_mousewheel(*args,passed))
+            frame.bind('<Leave>', lambda *args, passed=canvas: _unbound_to_mousewheel(*args,passed))
+        def _bound_to_mousewheel(event,canvas):
+            canvas.bind_all("<MouseWheel>", lambda *args, passed=canvas: _on_mousewheel(*args,passed))
+        def _unbound_to_mousewheel( event, canvas):
+            canvas.unbind_all("<MouseWheel>")  
+        def _on_mousewheel(event,canvas):
+            canvas.yview_scroll(int(-1*(event.delta/120)), "units")
+        _setup_mousewheel(frame,canvas)
         def add_new_note() : 
             controller.show_frame(notes_page2)
         add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
