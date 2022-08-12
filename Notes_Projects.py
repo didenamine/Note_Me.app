@@ -232,6 +232,8 @@ class notes_page2(tk.Frame) :
         def  get_text() : 
            global Current_userV2
            data_cursor.execute('SELECT * FROM NOTES where Note_owner=%s'%Current_userV2)
+           #must find a way to link the Note_user with the notes 
+           #must fine a way to open old notes in the note_page2
            Note_Rank=len(data_cursor.fetchall())
            data_cursor.execute('INSERT INTO NOTES (Note_owner,Note_Rank,Note_Title,Note_Text) VALUES (?,?,?,?)',(Current_userV2,Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
            title_entry.delete(0,END)
