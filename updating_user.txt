@@ -1,5 +1,6 @@
 DESGIN ARE STILL SHITTY 
-
+('''''''''''''''''''''''''''''''''''''')
+added Note_owner to the NOTES Database 
 
 --------
 have to remove the current user and curret state from globals 

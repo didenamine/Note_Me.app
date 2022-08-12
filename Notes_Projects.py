@@ -1,6 +1,6 @@
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
+from tkinter import INSERT, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
 from tkinter import messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
@@ -186,17 +186,23 @@ class notes_page1(tk.Frame) :
         else :
          space_label=Label(frame,text='' ,bg='#EDD01C',height=2)
          space_label.grid(row=1,column=1)
+    #function to show what's inside that note and it can be changed and modified 
+        def show_note() :
+          data_cursor.execute("SELECT Note_Text from NOTES where Note_Rank=%d"%4)
+          text=data_cursor.fetchall()
+          print(text)
+          controller.show_frame(notes_page2)
+     
         for i in range(Notes_Count) :
             if i%2==0 :
-             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
              x.grid(row=(i+1)+1,column=1)
-             frame.update()
             else :
              if i>0 :
-              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
               f.grid(row=(i+1),column=2)
              else :
-              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1)
+              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
               f.grid(row=(i+1)+1,column=2)
         canvas.create_window(0, 0, anchor='nw', window=frame)
         canvas.update_idletasks()
@@ -224,9 +230,10 @@ class notes_page2(tk.Frame) :
         database_connect = sqlite3.connect('NOTES_DB.db')
         database_cursor = database_connect.cursor()
         def  get_text() : 
-           data_cursor.execute('SELECT * FROM NOTES')
+           global Current_userV2
+           data_cursor.execute('SELECT * FROM NOTES where Note_owner=%s'%Current_userV2)
            Note_Rank=len(data_cursor.fetchall())
-           data_cursor.execute('INSERT INTO NOTES (Note_Rank,Note_Title,Note_Text) VALUES (?,?,?)',(Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
+           data_cursor.execute('INSERT INTO NOTES (Note_owner,Note_Rank,Note_Title,Note_Text) VALUES (?,?,?,?)',(Current_userV2,Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
            title_entry.delete(0,END)
            note_Entry.delete(1.0,END)
            messagebox.showinfo('Done',"Note Saved")
