@@ -1,6 +1,7 @@
+#App still under development
 import tkinter as tk
 import sqlite3
-from tkinter import INSERT, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
+from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
 from tkinter import messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
@@ -96,6 +97,7 @@ class Register_page(tk.Frame):
          if  str(Register_page_pass_entry.get()) == str(Register_page_pass_confirm_entry.get()) :  
           database_connect = sqlite3.connect('NOTES_DB.db')
           data_cursor=database_connect.cursor()
+          data_cursor.execute("DELETE FROM LOGINS")
           data_cursor.execute("INSERT INTO LOGINS (user_name,user_password,user_email) VALUES (?,?,?)",(str(Register_page_name_entry.get()),str(Register_page_pass_entry.get()),str(Register_page_email_entry.get())))
           register_page_done_label=Register_label('DONE',20,350,"account is saved !",15,1,'green')
           Register_page_email_entry.delete(0,END)
@@ -231,11 +233,9 @@ class notes_page2(tk.Frame) :
         database_cursor = database_connect.cursor()
         def  get_text() : 
            global Current_userV2
-           data_cursor.execute('SELECT * FROM NOTES where Note_owner=%s'%Current_userV2)
-           #must find a way to link the Note_user with the notes 
-           #must fine a way to open old notes in the note_page2
+           data_cursor.execute('SELECT * from NOTES')
            Note_Rank=len(data_cursor.fetchall())
-           data_cursor.execute('INSERT INTO NOTES (Note_owner,Note_Rank,Note_Title,Note_Text) VALUES (?,?,?,?)',(Current_userV2,Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
+           data_cursor.execute('INSERT INTO NOTES (Note_Rank,Note_Title,Note_Text) VALUES (?,?,?)',(Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
            title_entry.delete(0,END)
            note_Entry.delete(1.0,END)
            messagebox.showinfo('Done',"Note Saved")
