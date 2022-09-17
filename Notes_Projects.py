@@ -1,7 +1,7 @@
 #App still under development
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame
+from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame,messagebox
 from tkinter import messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
@@ -150,7 +150,13 @@ class Register_page(tk.Frame):
 #welcoming page
 class Welcoming_page(tk.Frame):
     def __init__(self,parent,controller):
+        def popout():            
+            answer=messagebox.askyesnocancel('Warning','When diconnecting you will lose all your data')
+            if answer==1:pass 
+            if answer==2:pass
+            if answer==3:pass
         def Leave_button() : 
+            popout()
             database_connect=sqlite3.connect('NOTES_DB.db')
             data_cursor=database_connect.cursor()
             data_cursor.execute('UPDATE LOGINS_STATE set current_user=NULL,current_state=0')
