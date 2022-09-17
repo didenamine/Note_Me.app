@@ -1,2 +1,0 @@
-n=int(input())
-print((len(list((filter(lambda x:x!='0',str(bin(n)[2:])))))))
