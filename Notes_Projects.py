@@ -1,7 +1,9 @@
 #App still under development
+from time import sleep
 import tkinter as tk
 import sqlite3
-from tkinter import Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame,messagebox
+import sqlite3
+from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame,messagebox
 from tkinter import messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
@@ -9,6 +11,7 @@ wrong_pass_counter = 0
 databae_connect =sqlite3.connect('NOTES_DB.db')
 data_cursor=databae_connect.cursor()
 data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
+databae_connect.commit()
 Current_stateV1= data_cursor.fetchall()
 Current_userV2 = Current_stateV1[0][1]
 #main _ app 
@@ -23,6 +26,7 @@ class main_app(tk.Tk):
         data_baseconnect=sqlite3.connect('NOTES_DB.db')
         data_cursor=data_baseconnect.cursor()
         data_cursor.execute('SELECT current_state from LOGINS_STATE')
+        data_baseconnect.commit()
         Current_person_state = data_cursor.fetchall()
         for frame_class in (Login_page,Register_page, Welcoming_page,notes_page1,notes_page2):
             frame = frame_class(container, self)
@@ -31,8 +35,8 @@ class main_app(tk.Tk):
         if Current_person_state[0][0]==0: 
          self.show_frame(Login_page)
         else :
+          self.update()
           self.show_frame(Welcoming_page)
-               
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
@@ -52,6 +56,7 @@ class Login_page(tk.Frame):
                 database_connection=sqlite3.connect("NOTES_DB.db")
                 data_currsor=database_connection.cursor()
                 data_currsor.execute("SELECT user_name,user_password from LOGINS")
+                database_connection.commit()
                 records=data_currsor.fetchall()
                 global wrong_pass_counter 
                 if  (str(Login_page_User_name_Entry.get()), str(Login_page_User_pass_Entry.get())) not in records  :
@@ -61,12 +66,14 @@ class Login_page(tk.Frame):
                         Login_page_Forget_pass =Button(text="Forget password?",width=20,height=1,bg='#A6A6A6',bd=0,activebackground='#A6A6A6',fg='blue')
                         Login_page_Forget_pass.place(x=270,y=469)
                 else :
+                    global Current_userV2
                     database_connection=sqlite3.connect('NOTES_DB.db')
                     data_currsor=database_connection.cursor()
                     Login_page_Error_connect.config(text='')
                     Current_userV2=str(Login_page_User_name_Entry.get())
                     data_currsor.execute("UPDATE LOGINS_STATE SET current_user=(?),current_state=(?)",((str(Login_page_User_name_Entry.get())),('1')))
                     database_connection.commit()
+                    database_connection.close()
                     controller.show_frame(Welcoming_page)            
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         Login_page_frame=CTkFrame(self,width=350,height=450,corner_radius=15,fg_color='#A6A6A6')
@@ -92,12 +99,12 @@ class Login_page(tk.Frame):
 #Register page 
 class Register_page(tk.Frame):
     def __init__(self,parent,controller):
+        tk.Frame.__init__(self,parent,bg='#EDD01C')
         def Done_register() :
           #putting the person inside the database 
          if  str(Register_page_pass_entry.get()) == str(Register_page_pass_confirm_entry.get()) :  
           database_connect = sqlite3.connect('NOTES_DB.db')
           data_cursor=database_connect.cursor()
-          data_cursor.execute("DELETE FROM LOGINS")
           data_cursor.execute("INSERT INTO LOGINS (user_name,user_password,user_email) VALUES (?,?,?)",(str(Register_page_name_entry.get()),str(Register_page_pass_entry.get()),str(Register_page_email_entry.get())))
           register_page_done_label=Register_label('DONE',20,350,"account is saved !",15,1,'green')
           Register_page_email_entry.delete(0,END)
@@ -111,7 +118,6 @@ class Register_page(tk.Frame):
          else :    
             register_page_warning_label=Register_label('warning',20,350,"Wrong password!",15,1,'red')
             register_page_warning_label.make_button()
-        tk.Frame.__init__(self,parent,bg='#EDD01C')
         Register_page_frame=CTkFrame(self,width=350,height=450,bg_color='#EDD01C',corner_radius=15,fg_color='#A6A6A6')
         Register_page_frame.place(x=75,y=50)
         Register_page_label=Label(Register_page_frame,width=10,text="Register",font=("Times New Roman",30),bg='#A6A6A6')
@@ -155,13 +161,18 @@ class Welcoming_page(tk.Frame):
             if answer==1:pass 
             if answer==2:pass
             if answer==3:pass
+
         def Leave_button() : 
+            global Current_userV2
             popout()
             database_connect=sqlite3.connect('NOTES_DB.db')
             data_cursor=database_connect.cursor()
             data_cursor.execute('UPDATE LOGINS_STATE set current_user=NULL,current_state=0')
-            controller.show_frame(Login_page)
             database_connect.commit()
+            Current_userV2=''
+            sleep(1)
+            app.destroy()
+            controller.show_frame(Login_page)
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         def Enter_in_notes() :
             controller.show_frame(notes_page1)
@@ -176,12 +187,16 @@ class Welcoming_page(tk.Frame):
         disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button,font=('arial',15))
         disconnect_button.place(x=350,y=500)
 #Notes page 1//where to show the previous notes 
+
 class notes_page1(tk.Frame) :
     def __init__(self,parent,controller) :
+        global Current_userV2
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         page1_data=sqlite3.connect('NOTES_DB.db')
         page1_cursor = page1_data.cursor()
-        old_notes=page1_cursor.execute('SELECT * from NOTES').fetchall()
+        old_notes=page1_cursor.execute("SELECT * from NOTES where Note_Owner=('%s')"%Current_userV2).fetchall()
+        page1_data.commit()
+        print(old_notes)
         Notes_Count=len(old_notes)
         canvas = Canvas(self,bg='#EDD01C')
         scroll_y = Scrollbar(self, orient="vertical", command=canvas.yview)
@@ -200,17 +215,17 @@ class notes_page1(tk.Frame) :
           text=data_cursor.fetchall()
           print(text)
           controller.show_frame(notes_page2)
-     
+        news=page1_data.cursor()
         for i in range(Notes_Count) :
             if i%2==0 :
-             x=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
+             x=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
              x.grid(row=(i+1)+1,column=1)
             else :
              if i>0 :
-              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
+              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
               f.grid(row=(i+1),column=2)
              else :
-              f=Button(frame,text=str(old_notes[i][1]),width=20,height=3,font='arial',border=1,command=show_note)
+              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
               f.grid(row=(i+1)+1,column=2)
         canvas.create_window(0, 0, anchor='nw', window=frame)
         canvas.update_idletasks()
@@ -239,9 +254,9 @@ class notes_page2(tk.Frame) :
         database_cursor = database_connect.cursor()
         def  get_text() : 
            global Current_userV2
-           data_cursor.execute('SELECT * from NOTES')
+           data_cursor.execute("SELECT * from NOTES where Note_Owner=('%s')"%Current_userV2)
            Note_Rank=len(data_cursor.fetchall())
-           data_cursor.execute('INSERT INTO NOTES (Note_Rank,Note_Title,Note_Text) VALUES (?,?,?)',(Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
+           data_cursor.execute('INSERT INTO NOTES (Note_Owner,Note_Rank,Note_Title,Note_Text) VALUES (?,?,?,?)',(Current_userV2,Note_Rank+1,str(title_entry.get()),str(note_Entry.get('1.0',END))))
            title_entry.delete(0,END)
            note_Entry.delete(1.0,END)
            messagebox.showinfo('Done',"Note Saved")
