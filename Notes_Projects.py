@@ -1,10 +1,9 @@
 #App still under development
+from ast import Delete
 from time import sleep
 import tkinter as tk
 import sqlite3
-import sqlite3
-from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame,messagebox
-from tkinter import messagebox
+from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, mainloop,messagebox,messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 wrong_pass_counter = 0
@@ -14,6 +13,7 @@ data_cursor.execute('SELECT current_state,current_user from LOGINS_STATE')
 databae_connect.commit()
 Current_stateV1= data_cursor.fetchall()
 Current_userV2 = Current_stateV1[0][1]
+
 #main _ app 
 class main_app(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -35,11 +35,11 @@ class main_app(tk.Tk):
         if Current_person_state[0][0]==0: 
          self.show_frame(Login_page)
         else :
-          self.update()
           self.show_frame(Welcoming_page)
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
+        
 #Login page
 class Login_page(tk.Frame):
     def __init__(self, parent, controller):
@@ -170,8 +170,6 @@ class Welcoming_page(tk.Frame):
             data_cursor.execute('UPDATE LOGINS_STATE set current_user=NULL,current_state=0')
             database_connect.commit()
             Current_userV2=''
-            sleep(1)
-            app.destroy()
             controller.show_frame(Login_page)
         tk.Frame.__init__(self,parent,bg='#EDD01C')
         def Enter_in_notes() :
