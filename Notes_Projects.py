@@ -2,7 +2,7 @@
 from time import sleep
 import tkinter as tk
 import sqlite3
-from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, mainloop,messagebox,messagebox
+from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, Toplevel, mainloop,messagebox,messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 wrong_pass_counter = 0
@@ -151,15 +151,8 @@ class Register_page(tk.Frame):
 #welcoming page
 class Welcoming_page(tk.Frame):
     def __init__(self,parent,controller):
-        def popout():            
-            answer=messagebox.askyesnocancel('Warning','When diconnecting you will lose all your data')
-            if answer==1:pass 
-            if answer==2:pass
-            if answer==3:pass
-
         def Leave_button() : 
             global Current_userV2
-            popout()
             database_connect=sqlite3.connect('NOTES_DB.db')
             data_cursor=database_connect.cursor()
             data_cursor.execute('UPDATE LOGINS_STATE set current_user=NULL,current_state=0')
@@ -202,18 +195,17 @@ class notes_page1(tk.Frame) :
          space_label=Label(frame,text='' ,bg='#EDD01C',height=2)
          space_label.grid(row=1,column=1)
     #function to show what's inside that note and it can be changed and modified 
-        def show_note() :
-          data_cursor.execute("SELECT Note_Text from NOTES where Note_Rank=%d"%4)
+        def show_note(note_rank) :
+          data_cursor.execute("SELECT Note_Title,Note_Text from NOTES where Note_Rank=%d"%note_rank)
           text=data_cursor.fetchall()
-          controller.show_frame(notes_page2)
         news=page1_data.cursor()
         for i in range(Notes_Count) :
             if i%2==0 :
-             x=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
+             x=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note(i+1))
              x.grid(row=(i+1)+1,column=1)
             else :
              if i>0 :
-              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
+              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note(i+1))
               f.grid(row=(i+1),column=2)
              else :
               f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
@@ -238,11 +230,17 @@ class notes_page1(tk.Frame) :
             controller.show_frame(notes_page2)
         add_new_note_button = CTkButton(self,text="+",text_font=('arial',18),command=add_new_note,fg_color='red',width=60,border_width=13,border_color='red',hover_color='red')
         add_new_note_button.place(x=400,y=500)
+        def go_back_to_welcoming_page():
+            controller.show_frame(Welcoming_page)
+        go_back_to_welcoming_page_button=Button(self,text='Back',bg='red',width=10,height=1,command=go_back_to_welcoming_page)
+        go_back_to_welcoming_page_button.place(x=20,y=560)
 #Notes page 2 // page where to write the note 
 class notes_page2(tk.Frame) :
     def __init__(self,parent,controller) :
         database_connect = sqlite3.connect('NOTES_DB.db')
         database_cursor = database_connect.cursor()
+        def go_back_to_page1():
+            controller.show_frame(notes_page1)
         def  get_text() : 
            global Current_userV2
            data_cursor.execute("SELECT * from NOTES where Note_Owner=('%s')"%Current_userV2)
@@ -263,7 +261,10 @@ class notes_page2(tk.Frame) :
         note_Entry.place(x=10,y=80)
         Done_text=Button(self,text="Done",command=get_text)
         Done_text.place(x=450,y=563)
+        go_back_to_page1_button=Button(self,text='Back',command=go_back_to_page1,width=10,height=2,bg='red')
+        go_back_to_page1_button.place(x=20,y=563)
 app = main_app()
 app.geometry('500x600')
+app.title('Note_Me')
 app.resizable(False,False)
 app.mainloop()
