@@ -1,5 +1,4 @@
 #App still under development
-from ast import Delete
 from time import sleep
 import tkinter as tk
 import sqlite3
@@ -18,27 +17,23 @@ Current_userV2 = Current_stateV1[0][1]
 class main_app(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        container = tk.Frame(self)
-        container.pack(side="top", fill="both", expand = True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
-        self.frames = {}
+        self.container = tk.Frame(self)
+        self.container.pack(fill="both", expand=True)
+        self.current_frame = None
         data_baseconnect=sqlite3.connect('NOTES_DB.db')
         data_cursor=data_baseconnect.cursor()
         data_cursor.execute('SELECT current_state from LOGINS_STATE')
         data_baseconnect.commit()
         Current_person_state = data_cursor.fetchall()
-        for frame_class in (Login_page,Register_page, Welcoming_page,notes_page1,notes_page2):
-            frame = frame_class(container, self)
-            self.frames[frame_class] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
         if Current_person_state[0][0]==0: 
          self.show_frame(Login_page)
         else :
           self.show_frame(Welcoming_page)
-    def show_frame(self, cont):
-        frame = self.frames[cont]
-        frame.tkraise()
+    def show_frame(self, new_frame_class):
+        if self.current_frame:
+            self.current_frame.destroy()
+        self.current_frame = new_frame_class(self.container, controller=self)
+        self.current_frame.pack(fill="both", expand=True)
         
 #Login page
 class Login_page(tk.Frame):
@@ -194,7 +189,6 @@ class notes_page1(tk.Frame) :
         page1_cursor = page1_data.cursor()
         old_notes=page1_cursor.execute("SELECT * from NOTES where Note_Owner=('%s')"%Current_userV2).fetchall()
         page1_data.commit()
-        print(old_notes)
         Notes_Count=len(old_notes)
         canvas = Canvas(self,bg='#EDD01C')
         scroll_y = Scrollbar(self, orient="vertical", command=canvas.yview)
@@ -211,7 +205,6 @@ class notes_page1(tk.Frame) :
         def show_note() :
           data_cursor.execute("SELECT Note_Text from NOTES where Note_Rank=%d"%4)
           text=data_cursor.fetchall()
-          print(text)
           controller.show_frame(notes_page2)
         news=page1_data.cursor()
         for i in range(Notes_Count) :
