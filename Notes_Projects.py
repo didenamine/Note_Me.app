@@ -1,8 +1,7 @@
 #App still under development
-from time import sleep
 import tkinter as tk
 import sqlite3
-from tkinter import SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, Toplevel, mainloop,messagebox,messagebox
+from tkinter import DISABLED, SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, Toplevel, mainloop,messagebox,messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 wrong_pass_counter = 0
@@ -195,21 +194,26 @@ class notes_page1(tk.Frame) :
          space_label=Label(frame,text='' ,bg='#EDD01C',height=2)
          space_label.grid(row=1,column=1)
     #function to show what's inside that note and it can be changed and modified 
-        def show_note(note_rank) :
-          data_cursor.execute("SELECT Note_Title,Note_Text from NOTES where Note_Rank=%d"%note_rank)
-          text=data_cursor.fetchall()
-        news=page1_data.cursor()
+    #class for the buttons which appear as the old notes 
+        class Buttons :
+            def __init__(self,name,r,c) :
+                self.name=name
+                self.r=r  
+                self.c = c 
+            def button_selected(self):
+                controller.show_frame(notes_page2)
+            def make_button(self,place): 
+                oldnote=Button(place,text=self.name,width=20,height=3,font='arial',border=1,command=self.button_selected)
+                oldnote.grid(row=(self.r+1),column=self.c)
+        
         for i in range(Notes_Count) :
             if i%2==0 :
-             x=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note(i+1))
-             x.grid(row=(i+1)+1,column=1)
+             Buttons(str(old_notes[i][2]),(i+1),1).make_button(frame)
             else :
              if i>0 :
-              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note(i+1))
-              f.grid(row=(i+1),column=2)
+              Buttons(str(old_notes[i][2]),i,2).make_button(frame)
              else :
-              f=Button(frame,text=str(old_notes[i][2]),width=20,height=3,font='arial',border=1,command=show_note)
-              f.grid(row=(i+1)+1,column=2)
+              Buttons(str(old_notes[i][2]),(i+1),2).make_button(frame)
         canvas.create_window(0, 0, anchor='nw', window=frame)
         canvas.update_idletasks()
         canvas.configure(scrollregion=canvas.bbox('all'),yscrollcommand=scroll_y.set)
