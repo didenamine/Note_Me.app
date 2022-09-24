@@ -1,7 +1,7 @@
 #App still under development
 import tkinter as tk
 import sqlite3
-from tkinter import DISABLED, SCROLL, Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame, Toplevel, mainloop,messagebox,messagebox
+from tkinter import  Label,Button,Entry,END,Scrollbar,Text,Canvas,Frame,messagebox,messagebox
 from customtkinter import CTkFrame,CTkEntry,CTkButton,END
 
 wrong_pass_counter = 0
@@ -57,7 +57,7 @@ class Login_page(tk.Frame):
                     Login_page_Error_connect.config(text='Wrong Username or Pass !')
                     wrong_pass_counter+=1 
                     if wrong_pass_counter>3 : 
-                        Login_page_Forget_pass =Button(text="Forget password?",width=20,height=1,bg='#A6A6A6',bd=0,activebackground='#A6A6A6',fg='blue')
+                        Login_page_Forget_pass =Button(self,text="Forget password?",width=20,height=1,bg='#A6A6A6',bd=0,activebackground='#A6A6A6',fg='blue')
                         Login_page_Forget_pass.place(x=270,y=469)
                 else :
                     global Current_userV2
@@ -172,7 +172,7 @@ class Welcoming_page(tk.Frame):
         disconnect_button=Button(self,text="Disconnect",bg='red',command=Leave_button,font=('arial',15))
         disconnect_button.place(x=350,y=500)
 #Notes page 1//where to show the previous notes 
-
+note_place_and_state=-1
 class notes_page1(tk.Frame) :
     def __init__(self,parent,controller) :
         global Current_userV2
@@ -202,10 +202,12 @@ class notes_page1(tk.Frame) :
                 self.c = c 
             def button_selected(self):
                 controller.show_frame(notes_page2)
-            def make_button(self,place): 
-                oldnote=Button(place,text=self.name,width=20,height=3,font='arial',border=1,command=self.button_selected)
+            def get_place(place):
+                global note_place_and_state
+                print(place)
+            def make_button(self,container): 
+                oldnote=Button(container,text=self.name,width=20,height=3,font='arial',border=1,command=self.button_selected)
                 oldnote.grid(row=(self.r+1),column=self.c)
-        
         for i in range(Notes_Count) :
             if i%2==0 :
              Buttons(str(old_notes[i][2]),(i+1),1).make_button(frame)
