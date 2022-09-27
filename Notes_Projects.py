@@ -43,7 +43,7 @@ class Login_page(tk.Frame):
         def temp_text_pass(e) :
          Login_page_User_pass_Entry.delete(0,END) 
          Login_page_User_pass_Entry.config(show="*",text_color='black')
-        def wrong_pass() :
+        def wrong_pass() :#still under development
            pass 
         def user_connect() :
                 global Current_userV2
@@ -202,9 +202,6 @@ class notes_page1(tk.Frame) :
                 self.c = c 
             def button_selected(self):
                 controller.show_frame(notes_page2)
-            def get_place(place):
-                global note_place_and_state
-                print(place)
             def make_button(self,container): 
                 oldnote=Button(container,text=self.name,width=20,height=3,font='arial',border=1,command=self.button_selected)
                 oldnote.grid(row=(self.r+1),column=self.c)
